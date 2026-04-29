@@ -24,3 +24,11 @@ def obtener_empresa(empresa_id: int, db: Session = Depends(get_db)):
     if empresa is None:
         raise HTTPException(status_code=404, detail="Company not found")
     return empresa
+
+@app.post("/empleados", response_model=schemas.EmpleadoResponse)
+def crear_empleado(empleado: schemas.EmpleadoBase, db: Session = Depends(get_db)):
+    nuevo_empleado = models.Empleado(**empleado.model_dump())
+    db.add(nuevo_empleado)
+    db.commit()
+    db.refresh(nuevo_empleado)
+    return nuevo_empleado
